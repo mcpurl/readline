@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/mattn/go-runewidth"
 )
 
 var runes = Runes{}
@@ -129,31 +131,8 @@ func (Runes) ColorFilter(r []rune) []rune {
 	return newr
 }
 
-var zeroWidth = []*unicode.RangeTable{
-	unicode.Mn,
-	unicode.Me,
-	unicode.Cc,
-	unicode.Cf,
-}
-
-var doubleWidth = []*unicode.RangeTable{
-	unicode.Han,
-	unicode.Hangul,
-	unicode.Hiragana,
-	unicode.Katakana,
-}
-
 func (Runes) Width(r rune) int {
-	if r == '\t' {
-		return TabWidth
-	}
-	if unicode.IsOneOf(zeroWidth, r) {
-		return 0
-	}
-	if unicode.IsOneOf(doubleWidth, r) {
-		return 2
-	}
-	return 1
+	return runewidth.RuneWidth(r)
 }
 
 func (Runes) WidthAll(r []rune) (length int) {
@@ -214,7 +193,7 @@ aggregate:
 func (Runes) TrimSpaceLeft(in []rune) []rune {
 	firstIndex := len(in)
 	for i, r := range in {
-		if unicode.IsSpace(r) == false {
+		if !unicode.IsSpace(r) {
 			firstIndex = i
 			break
 		}

@@ -71,11 +71,6 @@ func (t *Terminal) WriteStdin(b []byte) (int, error) {
 	return t.cfg.StdinWriter.Write(b)
 }
 
-type termSize struct {
-	left int
-	top  int
-}
-
 func (t *Terminal) GetOffset(f func(offset string)) {
 	go func() {
 		f(<-t.sizeChan)
